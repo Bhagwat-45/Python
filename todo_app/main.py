@@ -1,39 +1,67 @@
-todos = []
+def get_todos(filepath):
+    with open(filepath,'r') as file:
+        todos = file.readlines()
+    return todos
+
 
 while True:
-    user_action = input("Type add, show, edit or exit: ")
-    user_action = user_action.strip()
+    user_action = input("Type add, show, edit, complete or exit: ").strip().lower()
 
-    match user_action:
-        case 'add':
-            todo = input("Enter a todo: ") + "\n"
-            file_read = open('files/todos.txt','r')
-            todos = file_read.readlines()
-            file_read.close()
-            todos.append(todo)
-            file_write = open("files/todos.txt","w")
-            file_write.writelines(todos)
-            file_write.close()
-        case 'show' | 'display':
-            file = open('files/todos.txt','r')
+    if 'add' in user_action:
+        todo = user_action[4:] + "\n"
+
+        todos = get_todos(filepath="todos.txt")
+
+        todos.append(todo)
+
+        with open("files/todos.txt", "w") as file:
+            file.writelines(todos)
+
+    elif 'show' in user_action or 'display' in user_action:
+        with open("files/todos.txt", "r") as file:
             todos = file.readlines()
-            file.close()
 
+        for index, item in enumerate(todos, start=1):
+            print(f"{index}. {item.strip()}")
 
-            for index,items in enumerate(todos):
-                items = items.strip("\n")
-                print(f"{index+1}.{items}")
-        case 'edit':
-            number = int(input("Enter the number of todo you wanna change: "))
-            todos[number-1] = input("Enter the new todo: ")
-        case 'complete':
-            number = int(input("Enter the todo number to mark the todo complete: "))
-            todos.pop(number-1)
-            for index,items in enumerate(todos):
-                print(f"{index}.{items}")
-        case 'exit':
-            break
-        case whatever:
-            print("You have entered the wrong choice!")
+    elif 'edit' in user_action:
+        with open("files/todos.txt", "r") as file:
+            todos = file.readlines()
+
+        try:
+            number = int(input("Enter the number of todo you want to change: "))
+            if 0 < number <= len(todos):
+                todos[number - 1] = input("Enter the new todo: ").strip() + "\n"
+
+                with open("files/todos.txt", "w") as file:
+                    file.writelines(todos)
+            else:
+                print("Invalid todo number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    elif 'complete' in user_action:
+        with open("files/todos.txt", "r") as file:
+            todos = file.readlines()
+
+        try:
+            number = int(input("Enter the todo number to mark complete: "))
+            if 0 < number <= len(todos):
+                removed = todos.pop(number - 1)
+
+                with open("files/todos.txt", "w") as file:
+                    file.writelines(todos)
+
+                print(f"Completed: {removed.strip()}")
+            else:
+                print("Invalid todo number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+    elif 'exit' in user_action:
+        break
+
+    else:
+        print("Wrong Function used!")
 
 print("Bye!!")
