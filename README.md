@@ -1,2 +1,2 @@
 # Python
-My learning scripts
+My learning scripts.
